@@ -16,6 +16,10 @@ var _webpack = require('webpack');
 
 var _webpack2 = _interopRequireDefault(_webpack);
 
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var devPort = 4000;
@@ -23,7 +27,7 @@ var app = (0, _express2.default)();
 var port = 3000;
 
 app.use('/', _express2.default.static(_path2.default.join(__dirname, './../public')));
-
+app.use(_bodyParser2.default.json());
 app.get('/hello', function (req, res) {
     return res.send('Hello CodeLab');
 });

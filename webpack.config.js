@@ -30,10 +30,6 @@ module.exports = {
         ]
     },
 
-    resolve: {
-        root: path.resolve('./src')
-    },
-
     plugins:[
         new webpack.DefinePlugin({
           'process.env':{
