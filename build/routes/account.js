@@ -8,22 +8,10 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
-var _account = require('../models/account');
-
-var _account2 = _interopRequireDefault(_account);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var router = _express2.default.Router();
 
-/*
-    ACCOUNT SIGNUP: POST /api/account/signup
-    BODY SAMPLE: { "username": "test", "password": "test" }
-    ERROR CODES:
-        1: BAD USERNAME
-        2: BAD PASSWORD
-        3: USERNAM EXISTS
-*/
 router.post('/signup', function (req, res) {
     // CHECK USERNAME FORMAT
     var usernameRegex = /^[a-z0-9]+$/;
@@ -44,7 +32,7 @@ router.post('/signup', function (req, res) {
     }
 
     // CHECK USER EXISTANCE
-    _account2.default.findOne({ username: req.body.username }, function (err, exists) {
+    Account.findOne({ username: req.body.username }, function (err, exists) {
         if (err) throw err;
         if (exists) {
             return res.status(409).json({
@@ -54,7 +42,7 @@ router.post('/signup', function (req, res) {
         }
 
         // CREATE ACCOUNT
-        var account = new _account2.default({
+        var account = new Account({
             username: req.body.username,
             password: req.body.password
         });
@@ -69,12 +57,6 @@ router.post('/signup', function (req, res) {
     });
 });
 
-/*
-    ACCOUNT SIGNIN: POST /api/account/signin
-    BODY SAMPLE: { "username": "test", "password": "test" }
-    ERROR CODES:
-        1: LOGIN FAILED
-*/
 router.post('/signin', function (req, res) {
 
     if (typeof req.body.password !== "string") {
@@ -85,7 +67,7 @@ router.post('/signin', function (req, res) {
     }
 
     // FIND THE USER BY USERNAME
-    _account2.default.findOne({ username: req.body.username }, function (err, account) {
+    Account.findOne({ username: req.body.username }, function (err, account) {
         if (err) throw err;
 
         // CHECK ACCOUNT EXISTANCY
@@ -118,9 +100,6 @@ router.post('/signin', function (req, res) {
     });
 });
 
-/*
-    GET CURRENT USER INFO GET /api/account/getInfo
-*/
 router.get('/getinfo', function (req, res) {
     if (typeof req.session.loginInfo === "undefined") {
         return res.status(401).json({
@@ -131,31 +110,11 @@ router.get('/getinfo', function (req, res) {
     res.json({ info: req.session.loginInfo });
 });
 
-/*
-    LOGOUT: POST /api/account/logout
-*/
 router.post('/logout', function (req, res) {
     req.session.destroy(function (err) {
         if (err) throw err;
     });
     return res.json({ sucess: true });
-});
-
-/*
-    SEARCH USER: GET /api/account/search/:username
-*/
-router.get('/search/:username', function (req, res) {
-    // SEARCH USERNAMES THAT STARTS WITH GIVEN KEYWORD USING REGEX
-    var re = new RegExp('^' + req.params.username);
-    _account2.default.find({ username: { $regex: re } }, { _id: false, username: true }).limit(5).sort({ username: 1 }).exec(function (err, accounts) {
-        if (err) throw err;
-        res.json(accounts);
-    });
-});
-
-// EMPTY SEARCH REQUEST: GET /api/account/search
-router.get('/search', function (req, res) {
-    res.json([]);
 });
 
 exports.default = router;

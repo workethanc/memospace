@@ -41,6 +41,10 @@ module.exports = {
             warnings: true
           }
         })
-    ]
+    ],
+
+    resolve: {
+        root: path.resolve('./src')
+    }
 
 };
